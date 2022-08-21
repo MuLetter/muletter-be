@@ -7,6 +7,15 @@
             ],
             "@routes": [
                 "src/routes"
+            ],
+            "@routes/*": [
+                "src/routes/*"
+            ],
+            "@utils": [
+                "src/utils"
+            ],
+            "types/*": [
+                "src/types/*"
             ]
         }
     }

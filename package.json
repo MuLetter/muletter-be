@@ -25,6 +25,7 @@
     "start-nodemon": "nodemon --watch src -e ts --exec 'npx tsc && node dist/app'"
   },
   "_moduleAliases": {
-    "@routes": "dist/routes"
+    "@routes": "dist/routes",
+    "@utils": "dist/utils"
   }
 }
