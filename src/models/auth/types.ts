@@ -31,13 +31,22 @@ export class Auth implements IAuth {
     this.nickname = nickname;
   }
 
-  static async get(username: string, password: string, nickname: string) {
+  static async check(username: string, password: string, nickname: string) {
     const check = await AuthModel.findOne({
       username,
     });
 
     if (check) throw new Error("이미 존재하는 계정입니다.");
     else return new Auth(username, password, nickname);
+  }
+
+  static async login(username: string, password: string) {
+    const user = await AuthModel.findOne({ username });
+
+    if (!user) throw new Error("존재하지 않는 계정입니다.");
+
+    const { password: checkPassword } = user;
+    console.log(await bcrypt.compare(password, checkPassword));
   }
 
   get password() {

@@ -1,12 +1,22 @@
 import { Auth } from "@models/types";
 import Express from "express";
-import { ReqJoinBody } from "./types";
+import { ReqJoinBody, ReqLoginBody } from "./types";
 
 const routes = Express.Router();
 
-routes.post("/", async (req: Express.Request, res: Express.Response) => {
-  return res.send("test");
-});
+routes.post(
+  "/",
+  async (
+    req: Express.Request<any, any, ReqLoginBody>,
+    res: Express.Response
+  ) => {
+    const { username, password } = req.body;
+
+    await Auth.login(username, password);
+
+    return res.send("test");
+  }
+);
 
 routes.post(
   "/join",
@@ -17,7 +27,7 @@ routes.post(
     const { username, password, nickname } = req.body;
 
     try {
-      const auth = await Auth.get(username, password, nickname);
+      const auth = await Auth.check(username, password, nickname);
       console.log(await auth.save());
     } catch (err) {
       console.error(err);
