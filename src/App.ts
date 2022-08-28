@@ -34,7 +34,10 @@ class App {
       console.log("[Express] Start! :)");
     });
 
-    await init();
+    const dbDrop = process.env.DB_DROP ? process.env.DB_DROP === "true" : false;
+    console.log(`[Mongoose Drop ?] ${dbDrop}`);
+
+    await init({ dbDrop });
   }
 }
 
