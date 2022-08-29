@@ -34,12 +34,13 @@ export class MailBox implements IMailbox {
     auth: AuthFromToken | string,
     title: string,
     image?: string,
-    _id?: Schema.Types.ObjectId | string
+    _id?: Schema.Types.ObjectId | string,
+    tracks?: Track[]
   ) {
     this.authId = typeof auth === "string" ? auth : auth.id;
     this.title = title;
     this.image = image;
-    this.tracks = [];
+    this.tracks = tracks ? tracks : [];
     this.id = _id;
   }
 
@@ -60,7 +61,7 @@ export class MailBox implements IMailbox {
       { $addToSet: { tracks: { $each: tracks } } }
     );
 
-    this.tracks = _.concat(this.tracks, tracks);
+    return await MailBox.get(this.id!);
   }
 
   static async get(id: Schema.Types.ObjectId | string) {
@@ -76,7 +77,8 @@ export class MailBox implements IMailbox {
       mailBox.authId.toString(),
       mailBox.title,
       mailBox.image,
-      mailBox._id.toString()
+      mailBox._id.toString(),
+      mailBox.tracks
     );
   }
 }

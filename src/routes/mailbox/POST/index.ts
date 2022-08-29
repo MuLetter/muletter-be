@@ -49,8 +49,9 @@ routes.post(
 
     try {
       const mailBox = await MailBox.get(id);
-      await mailBox.appendTracks(tracks);
-      return res.status(StatusCodes.OK).json(mailBox);
+      const newMailBox = await mailBox.appendTracks(tracks);
+
+      return res.status(StatusCodes.OK).json(newMailBox);
     } catch (err) {
       return next(err);
     }
