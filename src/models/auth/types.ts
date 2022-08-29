@@ -8,7 +8,7 @@ import { StatusCodes } from "http-status-codes";
 import { AuthFromToken } from "@/routes/auth/GET/types";
 
 export interface IAuth {
-  id?: Schema.Types.ObjectId | string;
+  readonly id?: Schema.Types.ObjectId | string;
 
   _id?: Schema.Types.ObjectId | string;
   username: string;
@@ -21,8 +21,15 @@ export interface IAuth {
   updatedAt?: Date;
 }
 
+export interface UpdateAuth {
+  nickname?: string;
+  profile?: string;
+  spotifyToken?: string;
+  socketId?: string;
+}
+
 export class Auth implements IAuth {
-  id?: Schema.Types.ObjectId | string;
+  readonly id?: Schema.Types.ObjectId | string;
 
   username: string;
   private _password: string;
@@ -30,7 +37,7 @@ export class Auth implements IAuth {
   nickname: string;
   profile!: string;
   spotifyToken!: string;
-  socketId!: string;
+  socketId?: string;
   createdAt!: Date;
   updatedAt!: Date;
 
@@ -38,12 +45,14 @@ export class Auth implements IAuth {
     username: string,
     password: string,
     nickname: string,
-    _id?: Schema.Types.ObjectId | string
+    _id?: Schema.Types.ObjectId | string,
+    socketId?: string
   ) {
     this.username = username;
     this._password = password;
     this.nickname = nickname;
     this.id = _id;
+    this.socketId = socketId;
   }
 
   toPlainObject() {
@@ -109,12 +118,7 @@ export class Auth implements IAuth {
 
       if (!dbCheck) throw new Error();
 
-      return new Auth(
-        auth.username,
-        auth.password,
-        auth.nickname,
-        auth.id
-      ).toPlainObject();
+      return new Auth(auth.username, auth.password, auth.nickname, auth.id);
     } catch (err) {
       throw new ResponseError(
         StatusCodes.FORBIDDEN,
@@ -151,5 +155,21 @@ export class Auth implements IAuth {
     const auth = await AuthModel.create(_auth);
 
     return auth;
+  }
+
+  async update(update: UpdateAuth) {
+    await AuthModel.updateOne({ _id: this.id }, update);
+    const updateAuth = await AuthModel.findById(this.id);
+
+    if (updateAuth)
+      return new Auth(
+        updateAuth?.username,
+        updateAuth?.password,
+        updateAuth.nickname,
+        updateAuth?._id,
+        updateAuth.socketId
+      );
+
+    return;
   }
 }

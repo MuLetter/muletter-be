@@ -18,7 +18,7 @@ routes.get(
       const auth = await Auth.tokenCheck(token);
       console.log("decrypted jwt", auth);
 
-      return res.status(StatusCodes.OK).json(auth);
+      return res.status(StatusCodes.OK).json(auth.toPlainObject());
     } catch (err) {
       return next(err);
     }
