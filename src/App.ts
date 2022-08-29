@@ -5,6 +5,7 @@ import morgan from "morgan";
 import routes from "./routes";
 import cors from "cors";
 import { init } from "@models/connect";
+import { errorHandler } from "./routes/error";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ class App {
   }
   SetRoutes() {
     this.app.use(routes);
+    this.app.use(errorHandler);
   }
 
   async Start() {

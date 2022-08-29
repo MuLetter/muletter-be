@@ -9,15 +9,20 @@ routes.post(
   "/",
   async (
     req: Express.Request<any, any, ReqLoginBody>,
-    res: Express.Response
+    res: Express.Response,
+    next: Express.NextFunction
   ) => {
-    const { username, password } = req.body;
+    try {
+      const { username, password } = req.body;
 
-    const auth = await Auth.login(username, password);
+      const auth = await Auth.login(username, password);
 
-    return res.status(StatusCodes.CREATED).json({
-      token: auth.token,
-    });
+      return res.status(StatusCodes.CREATED).json({
+        token: auth.token,
+      });
+    } catch (err) {
+      return next(err);
+    }
   }
 );
 
@@ -25,7 +30,8 @@ routes.post(
   "/join",
   async (
     req: Express.Request<any, any, ReqJoinBody>,
-    res: Express.Response
+    res: Express.Response,
+    next: Express.NextFunction
   ) => {
     const { username, password, nickname } = req.body;
 
@@ -42,7 +48,7 @@ routes.post(
         token: loginTest.token,
       });
     } catch (err) {
-      console.error(err);
+      return next(err);
     }
   }
 );

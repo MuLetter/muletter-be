@@ -22,6 +22,12 @@
             ],
             "@models/*": [
                 "src/models/*"
+            ],
+            "@middleware": [
+                "src/middlware"
+            ],
+            "@middleware/*": [
+                "src/middleware/*"
             ]
         }
     }

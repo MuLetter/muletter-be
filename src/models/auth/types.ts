@@ -3,9 +3,13 @@ import AuthModel from ".";
 import bcrypt from "bcrypt";
 import { authProjection } from "./projections";
 import jwt from "jsonwebtoken";
-import _ from "lodash";
+import { ResponseError } from "@routes/error";
+import { StatusCodes } from "http-status-codes";
+import { AuthFromToken } from "@/routes/auth/GET/types";
 
 export interface IAuth {
+  id?: Schema.Types.ObjectId | string;
+
   _id?: Schema.Types.ObjectId | string;
   username: string;
   password: string;
@@ -18,9 +22,11 @@ export interface IAuth {
 }
 
 export class Auth implements IAuth {
-  _id?: Schema.Types.ObjectId | string;
+  id?: Schema.Types.ObjectId | string;
+
   username: string;
-  _password: string;
+  private _password: string;
+
   nickname: string;
   profile!: string;
   spotifyToken!: string;
@@ -37,7 +43,17 @@ export class Auth implements IAuth {
     this.username = username;
     this._password = password;
     this.nickname = nickname;
-    this._id = _id;
+    this.id = _id;
+  }
+
+  toPlainObject() {
+    const auth: AuthFromToken = {
+      id: this.id!,
+      username: this.username,
+      nickname: this.nickname,
+    };
+
+    return auth;
   }
 
   static async check(username: string, password: string, nickname: string) {
@@ -45,19 +61,31 @@ export class Auth implements IAuth {
       username,
     });
 
-    if (check) throw new Error("이미 존재하는 계정입니다.");
+    if (check)
+      throw new ResponseError(
+        StatusCodes.UNAUTHORIZED,
+        "이미 존재하는 계정입니다."
+      );
     else return new Auth(username, password, nickname);
   }
 
   static async login(username: string, password: string) {
     const user = await AuthModel.findOne({ username }, authProjection);
 
-    if (!user) throw new Error("존재하지 않는 계정입니다.");
+    if (!user)
+      throw new ResponseError(
+        StatusCodes.UNAUTHORIZED,
+        "존재하지 않는 계정입니다."
+      );
 
     const { password: checkPassword } = user;
     const isAuth = await bcrypt.compare(password, checkPassword);
 
-    if (!isAuth) throw new Error("패스워드가 올르지 않습니다.");
+    if (!isAuth)
+      throw new ResponseError(
+        StatusCodes.UNAUTHORIZED,
+        "패스워드가 올바르지 않습니다."
+      );
     return new Auth(
       user.username,
       user.password,
@@ -66,15 +94,37 @@ export class Auth implements IAuth {
     );
   }
 
-  static async tokenCheck(token: string) {
+  static async tokenCheck(token?: string) {
     const secret = process.env.JWT_SECRET!;
+
+    if (!token)
+      throw new ResponseError(
+        StatusCodes.UNAUTHORIZED,
+        "토큰이 발행되지 않았습니다."
+      );
 
     try {
       const auth = jwt.verify(token, secret!) as IAuth;
-      return new Auth(auth.username, auth.password, auth.nickname, auth._id);
+      const dbCheck = await AuthModel.findOne({ username: auth.username });
+
+      if (!dbCheck) throw new Error();
+
+      return new Auth(
+        auth.username,
+        auth.password,
+        auth.nickname,
+        auth.id
+      ).toPlainObject();
     } catch (err) {
-      return undefined;
+      throw new ResponseError(
+        StatusCodes.FORBIDDEN,
+        "유효하지 않은 토큰 입니다."
+      );
     }
+  }
+
+  set password(password: string) {
+    this._password = password;
   }
 
   get password() {
@@ -83,7 +133,7 @@ export class Auth implements IAuth {
 
   get token() {
     const secret = process.env.JWT_SECRET!;
-    const token = jwt.sign(_.toPlainObject(this), secret, {
+    const token = jwt.sign(this.toPlainObject(), secret, {
       algorithm: "HS256",
       expiresIn: "1d",
     });
