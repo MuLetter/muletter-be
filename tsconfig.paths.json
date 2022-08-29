@@ -2,9 +2,6 @@
     "compilerOptions": {
         "baseUrl": "./",
         "paths": {
-            "@/*": [
-                "src/*"
-            ],
             "@routes": [
                 "src/routes"
             ],
@@ -26,11 +23,11 @@
             "@models/*": [
                 "src/models/*"
             ],
-            "@middleware": [
-                "src/middlware"
+            "@middlewares": [
+                "src/middlewares"
             ],
-            "@middleware/*": [
-                "src/middleware/*"
+            "@middlewares/*": [
+                "src/middlewares/*"
             ]
         }
     }

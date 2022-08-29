@@ -6,5 +6,13 @@ export async function loginCheck(
   res: Express.Response,
   next: Express.NextFunction
 ) {
-  return next();
+  const token = req.headers.authorization;
+  try {
+    const auth = await Auth.tokenCheck(token);
+    req.auth = auth.toPlainObject();
+
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 }

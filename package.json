@@ -41,6 +41,6 @@
     "@routes": "dist/routes",
     "@utils": "dist/utils",
     "@models": "dist/models",
-    "@mw": "dist/middlewares"
+    "@middlewares": "dist/middlewares"
   }
 }

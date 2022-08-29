@@ -5,7 +5,7 @@ import { authProjection } from "./projections";
 import jwt from "jsonwebtoken";
 import { ResponseError } from "@routes/error";
 import { StatusCodes } from "http-status-codes";
-import { AuthFromToken } from "@/routes/auth/GET/types";
+import { AuthFromToken } from "@routes/auth/types";
 
 export interface IAuth {
   readonly id?: Schema.Types.ObjectId | string;
@@ -57,7 +57,7 @@ export class Auth implements IAuth {
 
   toPlainObject() {
     const auth: AuthFromToken = {
-      id: this.id!,
+      id: this.id! as string,
       username: this.username,
       nickname: this.nickname,
     };

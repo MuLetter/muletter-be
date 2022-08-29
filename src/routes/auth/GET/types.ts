@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 
 export interface AuthFromToken {
-  id: Schema.Types.ObjectId | string;
+  id: string;
   username: string;
   nickname: string;
 }
