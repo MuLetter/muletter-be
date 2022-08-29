@@ -6,10 +6,13 @@ import routes from "./routes";
 import cors from "cors";
 import { init } from "@models/connect";
 import { errorHandler } from "./routes/error";
+import http from "http";
+import { socketConnect } from "./utils/socket";
 
 dotenv.config();
 
 class App {
+  server: http.Server;
   app: Express.Application;
 
   constructor() {
@@ -17,6 +20,8 @@ class App {
 
     this.SetMW();
     this.SetRoutes();
+
+    this.server = http.createServer(this.app);
   }
 
   SetMW() {
@@ -32,7 +37,7 @@ class App {
   async Start() {
     const port = process.env.PORT ? parseInt(process.env.PORT) : 8000;
 
-    this.app.listen(port, () => {
+    this.server.listen(port, () => {
       console.log("[Express] Start! :)");
     });
 
@@ -40,6 +45,7 @@ class App {
     console.log(`[Mongoose Drop ?] ${dbDrop}`);
 
     await init({ dbDrop });
+    socketConnect(this.server, this.app);
   }
 }
 
