@@ -11,3 +11,8 @@ export class Routes {
     setRoutes.call(this, dir);
   }
 }
+
+export interface ReqIdParams {
+  [key: string]: string;
+  id: string;
+}

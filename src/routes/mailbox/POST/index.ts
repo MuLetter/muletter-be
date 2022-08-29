@@ -1,9 +1,10 @@
 import { loginCheck } from "@middlewares";
 import { MailBox } from "@models/types";
+import { ReqIdParams } from "@routes/common";
 import { mailBoxImageUpload } from "@utils";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
-import { ReqPostMailBoxBody } from "./types";
+import { ReqPostMailBoxBody, ReqPostTracksBody } from "./types";
 
 const routes = Express.Router();
 
@@ -36,14 +37,23 @@ routes.post(
 
 // 우체통 음악 등록
 routes.post(
-  "/music",
+  "/:id",
   loginCheck,
   async (
-    req: Express.Request,
+    req: Express.Request<ReqIdParams, any, ReqPostTracksBody>,
     res: Express.Response,
     next: Express.NextFunction
   ) => {
-    return res.send("test");
+    const { id } = req.params;
+    const { tracks } = req.body;
+
+    try {
+      const mailBox = await MailBox.get(id);
+      await mailBox.appendTracks(tracks);
+      return res.status(StatusCodes.OK).json(mailBox);
+    } catch (err) {
+      return next(err);
+    }
   }
 );
 
