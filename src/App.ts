@@ -28,6 +28,7 @@ class App {
     this.app.use(cors());
     this.app.use(morgan("dev"));
     this.app.use(Express.json());
+    this.app.use("/static", Express.static("static"));
   }
   SetRoutes() {
     this.app.use(routes);
