@@ -39,7 +39,7 @@ class App {
     const port = process.env.PORT ? parseInt(process.env.PORT) : 8000;
 
     this.server.listen(port, () => {
-      console.log("[Express] Start! :)");
+      console.log(`[Express : ${port}] Start! :)`);
     });
 
     const dbDrop = process.env.DB_DROP ? process.env.DB_DROP === "true" : false;
