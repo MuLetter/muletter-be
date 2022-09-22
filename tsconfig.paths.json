@@ -28,6 +28,12 @@
             ],
             "@middlewares/*": [
                 "src/middlewares/*"
+            ],
+            "@api": [
+                "src/api"
+            ],
+            "@api/*": [
+                "src/api/*"
             ]
         }
     }

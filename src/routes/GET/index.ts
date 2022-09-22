@@ -1,4 +1,3 @@
-import { OAuthMemoryModel } from "@models";
 import { OAuthMemory } from "@models/types";
 import { generateRandomString } from "@utils";
 import Express from "express";
@@ -28,17 +27,29 @@ routes.get(
   }
 );
 
-// Client-Side 백업데이터 저장용
-routes.post(
-  "/spotify-oauth/:state",
-  async (req: Express.Request, res: Express.Response) => {
-    const { state } = req.params;
-    const oauthMemory = await OAuthMemory.get(state);
-    await oauthMemory.save(req.body);
+routes.get(
+  "/spotify-oauth/token",
+  async (
+    req: Express.Request,
+    res: Express.Response,
+    next: Express.NextFunction
+  ) => {
+    const { code, state } = req.query;
 
-    return res.status(StatusCodes.OK).json({
-      memory: _.toPlainObject(oauthMemory),
-    });
+    try {
+      const oauthMemory = await OAuthMemory.get(state as string);
+      const token = await oauthMemory.getToken(code as string);
+      const profile = await oauthMemory.getProfile(token.access_token);
+
+      return res.status(StatusCodes.OK).json({
+        spotifyToken: token,
+        spotifyProfile: profile,
+        memory: _.toPlainObject(oauthMemory),
+      });
+    } catch (err) {
+      console.error(err);
+      return next(err);
+    }
   }
 );
 

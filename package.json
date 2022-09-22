@@ -23,6 +23,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
@@ -44,6 +45,7 @@
     "@routes": "dist/routes",
     "@utils": "dist/utils",
     "@models": "dist/models",
-    "@middlewares": "dist/middlewares"
+    "@middlewares": "dist/middlewares",
+    "@api": "dist/api"
   }
 }

@@ -7,7 +7,7 @@ const AuthSchema = new Schema<IAuth>(
     password: { type: String, required: true },
     nickname: { type: String, required: true },
     profile: { type: String },
-    spotifyToken: { type: String },
+    spotifyToken: { type: Schema.Types.Mixed },
     socketId: { type: String },
   },
   {

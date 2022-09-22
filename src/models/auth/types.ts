@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 import { ResponseError } from "@routes/error";
 import { StatusCodes } from "http-status-codes";
 import { AuthFromToken } from "@routes/auth/types";
+import { getTokenByCode, getUserMe } from "@api";
+import { SpotifyToken, SpotifyUser } from "@api/types";
 
 export interface IAuth {
   readonly id?: Schema.Types.ObjectId | string;
@@ -15,7 +17,7 @@ export interface IAuth {
   password: string;
   nickname: string;
   profile?: string;
-  spotifyToken?: string;
+  spotifyToken?: SpotifyToken;
   socketId?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -46,7 +48,7 @@ export class Auth implements IAuth {
 
   nickname: string;
   profile!: string;
-  spotifyToken!: string;
+  spotifyToken!: SpotifyToken;
   socketId?: string;
   createdAt!: Date;
   updatedAt!: Date;
@@ -220,5 +222,17 @@ export class OAuthMemory implements IOAuthMemory {
       { new: true }
     );
     this.data = memory!.data;
+  }
+
+  async getToken(code: string) {
+    const res = await getTokenByCode(code);
+
+    return res.data;
+  }
+
+  async getProfile(accessToken: string) {
+    const res = await getUserMe(accessToken);
+
+    return res.data;
   }
 }
