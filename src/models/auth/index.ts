@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { IAuth } from "./types";
+import { IAuth, IOAuthMemory } from "./types";
 
 const AuthSchema = new Schema<IAuth>(
   {
@@ -15,6 +15,19 @@ const AuthSchema = new Schema<IAuth>(
     timestamps: true,
   }
 );
+export const AuthModel = model<IAuth>("Auth", AuthSchema);
 
-const AuthModel = model<IAuth>("Auth", AuthSchema);
-export default AuthModel;
+const OAuthMemorySchema = new Schema<IOAuthMemory>(
+  {
+    state: { type: String, required: true },
+    data: { type: Schema.Types.Mixed },
+  },
+  {
+    collection: "OAuthMemory",
+    timestamps: true,
+  }
+);
+export const OAuthMemoryModel = model<IOAuthMemory>(
+  "OAuthMemory",
+  OAuthMemorySchema
+);

@@ -1,3 +1,5 @@
+import { OAuthMemory } from "@models/types";
+
 export const SPOTIFY_NEEDED_SCOPES = ["user-read-email", "streaming"];
 export const SPOTIFY_OAUTH_QUERY_SET = {
   response_type: "code",
@@ -7,4 +9,5 @@ export const SPOTIFY_OAUTH_QUERY_SET = {
 };
 export interface ResGetSpotifyOAuth {
   url: string;
+  memory: OAuthMemory;
 }

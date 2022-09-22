@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import AuthModel from ".";
+import { AuthModel, OAuthMemoryModel } from ".";
 import bcrypt from "bcrypt";
 import { authProjection } from "./projections";
 import jwt from "jsonwebtoken";
@@ -17,6 +17,16 @@ export interface IAuth {
   profile?: string;
   spotifyToken?: string;
   socketId?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface IOAuthMemory {
+  _id?: Schema.Types.ObjectId | string;
+
+  state: string;
+  data?: any;
+
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -171,5 +181,44 @@ export class Auth implements IAuth {
       );
 
     return;
+  }
+}
+
+export class OAuthMemory implements IOAuthMemory {
+  state: string;
+  data?: any;
+
+  constructor(state: string, data?: any) {
+    this.state = state;
+    this.data = data;
+  }
+
+  static async create(state: string) {
+    const oauthMemory = await OAuthMemoryModel.create({
+      state,
+    });
+
+    return new OAuthMemory(oauthMemory.state);
+  }
+
+  static async get(state: string) {
+    const OAuthMemoryDocs = await OAuthMemoryModel.findOne({ state });
+
+    if (!OAuthMemoryDocs)
+      throw new ResponseError(
+        StatusCodes.BAD_REQUEST,
+        "존재하지 않는 정보 입니다."
+      );
+
+    return new OAuthMemory(OAuthMemoryDocs.state, OAuthMemoryDocs.data);
+  }
+
+  async save(data: any) {
+    const memory = await OAuthMemoryModel.findOneAndUpdate(
+      { state: this.state },
+      { $set: { data: data } },
+      { new: true }
+    );
+    this.data = memory!.data;
   }
 }

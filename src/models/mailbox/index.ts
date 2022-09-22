@@ -15,5 +15,4 @@ const MailBoxSchema = new Schema<IMailbox>(
   }
 );
 
-const MailBoxModel = model<IMailbox>("MailBox", MailBoxSchema);
-export default MailBoxModel;
+export const MailBoxModel = model<IMailbox>("MailBox", MailBoxSchema);

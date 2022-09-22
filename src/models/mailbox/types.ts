@@ -3,7 +3,7 @@ import { AuthFromToken } from "@routes/auth/types";
 import { ResponseError } from "@routes/error";
 import { StatusCodes } from "http-status-codes";
 import { Schema } from "mongoose";
-import MailBoxModel from ".";
+import { MailBoxModel } from ".";
 import _ from "lodash";
 
 export interface IMailbox {
