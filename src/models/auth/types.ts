@@ -73,6 +73,7 @@ export class Auth implements IAuth {
       username: this.username,
       nickname: this.nickname,
     };
+    if (this.spotifyToken) auth.spotifyToken = this.spotifyToken;
 
     return auth;
   }

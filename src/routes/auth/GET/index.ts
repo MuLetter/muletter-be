@@ -1,3 +1,4 @@
+import { getTokenByClientCredentials } from "@api";
 import { Auth } from "@models/types";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
@@ -17,6 +18,11 @@ routes.get(
     try {
       const auth = await Auth.tokenCheck(token);
       console.log("decrypted jwt", auth);
+
+      if (!auth.spotifyToken) {
+        auth.spotifyToken = await (await getTokenByClientCredentials()).data;
+        console.log("injected spotifyToken", auth);
+      }
 
       return res.status(StatusCodes.OK).json(auth.toPlainObject());
     } catch (err) {

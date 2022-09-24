@@ -7,6 +7,21 @@ dotenv.config();
 const AUTHURL = process.env.SPOTIFY_AUTH_URL;
 const APIURL = process.env.SPOTIFY_API_URL;
 
+export const getTokenByClientCredentials = async () =>
+  await axios.post<SpotifyToken>(
+    `${AUTHURL}`,
+    qs.stringify({ grant_type: "client_credentials" }),
+    {
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+      },
+      auth: {
+        username: process.env.SPOTIFY_CLIENT_ID!,
+        password: process.env.SPOTIFY_CLIENT_SECRET!,
+      },
+    }
+  );
+
 export const getTokenByCode = async (code: string) =>
   await axios.post<SpotifyToken>(
     `${AUTHURL}`,

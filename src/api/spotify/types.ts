@@ -10,8 +10,8 @@ export interface SpotifyToken {
   access_token: string;
   token_type: string;
   expires_in: number;
-  refresh_token: number;
-  scope: string;
+  refresh_token?: number;
+  scope?: string;
 }
 
 export interface SpotifyUser {
