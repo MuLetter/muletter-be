@@ -1,4 +1,4 @@
-import { OAuthMemory } from "@models/types";
+import { Auth, MailBox, OAuthMemory } from "@models/types";
 import { generateRandomString } from "@utils";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
@@ -53,8 +53,33 @@ routes.get(
   }
 );
 
-routes.get("/okay/:id", async (req: Express.Request, res: Express.Response) => {
-  return res.send("[From : BackEnd] Thx Recommender :)");
-});
+routes.get(
+  "/okay/:id",
+  async (
+    req: Express.Request,
+    res: Express.Response,
+    next: Express.NextFunction
+  ) => {
+    const { id } = req.params;
+
+    try {
+      console.log(
+        `[Server : Message] 우체통(${id})의 편지작성이 완료되었습니다.`
+      );
+      console.log("우체통 조회 --->");
+      const mailBox = await MailBox.get(id);
+      console.log(_.toPlainObject(mailBox));
+
+      console.log("사용자 조회 --->");
+      const auth = await Auth.getById(mailBox.authId);
+      console.log(_.toPlainObject(auth));
+
+      return res.send("[From : BackEnd] Thx Recommender :)");
+    } catch (err) {
+      console.error(err);
+      return next(err);
+    }
+  }
+);
 
 export default routes;

@@ -140,6 +140,23 @@ export class Auth implements IAuth {
     }
   }
 
+  static async getById(id: Schema.Types.ObjectId | string) {
+    const user = await AuthModel.findById(id, authProjection);
+
+    if (!user)
+      throw new ResponseError(
+        StatusCodes.UNAUTHORIZED,
+        "존재하지 않는 계정입니다."
+      );
+
+    return new Auth(
+      user.username,
+      user.password,
+      user.nickname,
+      user._id.toString()
+    );
+  }
+
   set password(password: string) {
     this._password = password;
   }
