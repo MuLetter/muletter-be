@@ -53,4 +53,8 @@ routes.get(
   }
 );
 
+routes.get("/okay/:id", async (req: Express.Request, res: Express.Response) => {
+  return res.send("[From : BackEnd] Thx Recommender :)");
+});
+
 export default routes;
