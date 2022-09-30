@@ -5,6 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import qs from "qs";
 import { ResGetSpotifyOAuth, SPOTIFY_OAUTH_QUERY_SET } from "./types";
 import _ from "lodash";
+import { writeSuccessAlert } from "@utils/socket";
 
 const routes = Express.Router();
 
@@ -72,7 +73,14 @@ routes.get(
 
       console.log("사용자 조회 --->");
       const auth = await Auth.getById(mailBox.authId);
-      console.log(_.toPlainObject(auth));
+      console.log(auth.toPlainObject());
+
+      const socketId = auth.socketId;
+      if (socketId)
+        writeSuccessAlert(req, socketId, {
+          message: "편지가 도착했습니다.",
+          navigatePath: `/mailbox/${id}`,
+        });
 
       return res.send("[From : BackEnd] Thx Recommender :)");
     } catch (err) {

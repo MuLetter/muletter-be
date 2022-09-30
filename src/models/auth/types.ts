@@ -74,6 +74,7 @@ export class Auth implements IAuth {
       nickname: this.nickname,
     };
     if (this.spotifyToken) auth.spotifyToken = this.spotifyToken;
+    if (this.socketId) auth.socketId = this.socketId;
 
     return auth;
   }
@@ -156,13 +157,15 @@ export class Auth implements IAuth {
         StatusCodes.UNAUTHORIZED,
         "존재하지 않는 계정입니다."
       );
-
-    return new Auth(
+    const auth = new Auth(
       user.username,
       user.password,
       user.nickname,
       user._id.toString()
     );
+    if (user.socketId) auth.socketId = user.socketId;
+
+    return auth;
   }
 
   set password(password: string) {

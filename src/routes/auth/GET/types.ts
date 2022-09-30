@@ -6,4 +6,5 @@ export interface AuthFromToken {
   username: string;
   nickname: string;
   spotifyToken?: SpotifyToken;
+  socketId?: string;
 }
