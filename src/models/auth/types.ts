@@ -129,9 +129,17 @@ export class Auth implements IAuth {
       const auth = jwt.verify(token, secret!) as IAuth;
       const dbCheck = await AuthModel.findOne({ username: auth.username });
 
+      console.log("tokenCheck", dbCheck);
+
       if (!dbCheck) throw new Error();
 
-      return new Auth(auth.username, auth.password, auth.nickname, auth.id);
+      return new Auth(
+        dbCheck.username,
+        dbCheck.password,
+        dbCheck.nickname,
+        dbCheck.id,
+        dbCheck.socketId
+      );
     } catch (err) {
       throw new ResponseError(
         StatusCodes.FORBIDDEN,
