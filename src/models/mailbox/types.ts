@@ -4,6 +4,7 @@ import { ResponseError } from "@routes/error";
 import { StatusCodes } from "http-status-codes";
 import { Schema } from "mongoose";
 import { MailBoxModel } from ".";
+import { MailBoxesProjection } from "./projections";
 import _ from "lodash";
 
 export interface IMailbox {
@@ -18,8 +19,7 @@ export interface IMailbox {
 }
 
 export class MailBox implements IMailbox {
-  id?: Schema.Types.ObjectId | string;
-  readonly _id!: Schema.Types.ObjectId | string;
+  _id?: Schema.Types.ObjectId | string;
 
   title: string;
   image?: string;
@@ -41,7 +41,7 @@ export class MailBox implements IMailbox {
     this.title = title;
     this.image = image;
     this.tracks = tracks ? tracks : [];
-    this.id = _id;
+    this._id = _id;
   }
 
   async save() {
@@ -57,11 +57,11 @@ export class MailBox implements IMailbox {
 
   async appendTracks(tracks: Track[]) {
     await MailBoxModel.updateOne(
-      { _id: this.id },
+      { _id: this._id! },
       { $addToSet: { tracks: { $each: tracks } } }
     );
 
-    return await MailBox.get(this.id!);
+    return await MailBox.get(this._id!);
   }
 
   static async get(id: Schema.Types.ObjectId | string) {
@@ -80,5 +80,11 @@ export class MailBox implements IMailbox {
       mailBox._id.toString(),
       mailBox.tracks
     );
+  }
+
+  static async getListByAuthId(authId: string) {
+    return await MailBoxModel.find({ authId }, MailBoxesProjection, {
+      sort: { updatedAt: -1 },
+    });
   }
 }
