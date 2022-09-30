@@ -11,7 +11,6 @@ const routes = Express.Router();
 // 우체통 등록
 routes.post(
   "/",
-  loginCheck,
   mailBoxImageUpload,
   async (
     req: Express.Request<any, any, ReqPostMailBoxBody>,
@@ -38,7 +37,6 @@ routes.post(
 // 우체통 음악 등록
 routes.post(
   "/:id",
-  loginCheck,
   async (
     req: Express.Request<ReqIdParams, any, ReqPostTracksBody>,
     res: Express.Response,
