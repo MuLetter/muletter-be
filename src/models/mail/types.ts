@@ -52,4 +52,10 @@ export class Mail implements IMail {
       },
     ]);
   }
+
+  async save() {
+    const mail = await MailModel.create(this);
+
+    return Mail.getFromDocs(mail);
+  }
 }

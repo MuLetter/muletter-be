@@ -1,7 +1,17 @@
 import axios from "axios";
 import qs from "qs";
-import { SpotifyToken, SpotifyUser, SPOTIFY_TOKEN_BODY_SET } from "./types";
+import {
+  HasToken,
+  ResAudioFeatures,
+  ResAvailableGenres,
+  ResGetArtists,
+  ResGetRecommendations,
+  SpotifyToken,
+  SpotifyUser,
+  SPOTIFY_TOKEN_BODY_SET,
+} from "./types";
 import dotenv from "dotenv";
+import { Seed } from "libs/types";
 
 dotenv.config();
 const AUTHURL = process.env.SPOTIFY_AUTH_URL;
@@ -43,3 +53,47 @@ export const getUserMe = async (accessToken: string) =>
       authorization: `Bearer ${accessToken}`,
     },
   });
+
+export const getAvailableGenres = function (this: HasToken) {
+  return axios.get<ResAvailableGenres>(
+    `${APIURL}/recommendations/available-genre-seeds`,
+    { headers: { authorization: `Bearer ${this.spotifyToken}` } }
+  );
+};
+
+export const getArtists = function (this: HasToken, ids: string) {
+  return axios.get<ResGetArtists>(
+    `${APIURL}/artists?${qs.stringify({ ids })}`,
+    {
+      headers: {
+        authorization: `Bearer ${this.spotifyToken}`,
+      },
+    }
+  );
+};
+
+export const getFeatures = function (this: HasToken, ids: string) {
+  return axios.get<ResAudioFeatures>(
+    `${APIURL}/audio-features?${qs.stringify({ ids })}`,
+    {
+      headers: {
+        authorization: `Bearer ${this.spotifyToken}`,
+      },
+    }
+  );
+};
+
+export const getRecommendations = function (this: HasToken, seed: Seed) {
+  return axios.get<ResGetRecommendations>(
+    `${APIURL}/recommendations?${qs.stringify({
+      ...seed,
+      market: "KR",
+      limit: 100,
+    })}`,
+    {
+      headers: {
+        authorization: `Bearer ${this.spotifyToken}`,
+      },
+    }
+  );
+};

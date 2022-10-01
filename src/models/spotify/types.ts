@@ -3,7 +3,9 @@ export interface Track {
   name: string;
   artists: Artist[];
   album: Album;
-  isUse: boolean;
+  isUse?: boolean;
+
+  label?: number;
 }
 
 export interface Artist {

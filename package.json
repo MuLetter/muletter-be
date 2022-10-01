@@ -47,6 +47,7 @@
     "@utils": "dist/utils",
     "@models": "dist/models",
     "@middlewares": "dist/middlewares",
-    "@api": "dist/api"
+    "@api": "dist/api",
+    "@lib": "dist/libs"
   }
 }

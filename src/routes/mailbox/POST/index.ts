@@ -1,4 +1,4 @@
-import { loginCheck } from "@middlewares";
+import { RecommenderRun } from "@lib";
 import { MailBox } from "@models/types";
 import { ReqIdParams } from "@routes/common";
 import { mailBoxImageUpload } from "@utils";
@@ -48,6 +48,8 @@ routes.post(
     try {
       const mailBox = await MailBox.get(id);
       const newMailBox = await mailBox.appendTracks(tracks);
+
+      RecommenderRun(id);
 
       return res.status(StatusCodes.OK).json(newMailBox);
     } catch (err) {
