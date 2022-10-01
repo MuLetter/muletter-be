@@ -35,6 +35,10 @@ export class Mail implements IMail {
     return new Mail(mail.title, mail.tracks, mail.mailBoxId);
   }
 
+  static async getById(id: string) {
+    return await MailModel.findById(id, { __v: 0 });
+  }
+
   static async getListByMailBoxId(id: string) {
     return await MailModel.aggregate([
       { $match: { mailBoxId: new Types.ObjectId(id) } },

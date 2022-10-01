@@ -1,5 +1,4 @@
-import { Mail } from "@models/mail/types";
-import { MailBox } from "@models/types";
+import { MailBox, Mail } from "@models/types";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
 
