@@ -64,6 +64,23 @@ export class MailBox implements IMailbox {
     return await MailBox.get(this._id!);
   }
 
+  async pullTrack(id: string) {
+    await MailBoxModel.updateOne(
+      {
+        _id: this._id!,
+      },
+      {
+        $pull: {
+          tracks: {
+            id,
+          },
+        },
+      }
+    );
+
+    return await MailBox.get(this._id!);
+  }
+
   static async get(id: Schema.Types.ObjectId | string) {
     const mailBox = await MailBoxModel.findById(id);
 
@@ -96,5 +113,31 @@ export class MailBox implements IMailbox {
     return await MailBoxModel.countDocuments({
       authId: id,
     });
+  }
+
+  async isUseUpdate() {
+    await MailBoxModel.updateOne(
+      { _id: this._id },
+      {
+        $set: {
+          tracks: _.map(this.tracks, (track) => ({ ...track, isUse: true })),
+        },
+      }
+    );
+  }
+
+  async appendMusic(track: Track) {
+    await MailBoxModel.updateOne(
+      {
+        _id: this._id,
+      },
+      {
+        $push: {
+          tracks: track,
+        },
+      }
+    );
+
+    return await MailBoxModel.findById(this._id, { _id: 0, tracks: 1 });
   }
 }

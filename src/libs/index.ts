@@ -21,5 +21,6 @@ export async function RecommenderRun(id: string) {
   const mail = await recommender.saveDB();
   console.log(mail);
 
+  await recommender.isUseUpdate();
   await recommender.okay();
 }

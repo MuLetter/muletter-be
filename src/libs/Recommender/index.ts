@@ -41,6 +41,10 @@ class Recommender {
     this.recoTracks = [];
   }
 
+  async isUseUpdate() {
+    await this.mailBox!.isUseUpdate();
+  }
+
   // add mailbox
   async addMailBox(id: string) {
     try {

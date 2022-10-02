@@ -1,5 +1,5 @@
 import { connect } from "mongoose";
-import { AuthModel, MailBoxModel, OAuthMemoryModel } from ".";
+import { AuthModel, MailBoxModel, OAuthMemoryModel, MailModel } from ".";
 import { AdminOptions } from "./types";
 
 export async function dbConnect({ dbDrop }: AdminOptions) {
@@ -14,6 +14,7 @@ export async function dbConnect({ dbDrop }: AdminOptions) {
       await AuthModel.deleteMany();
       await MailBoxModel.deleteMany();
       await OAuthMemoryModel.deleteMany();
+      await MailModel.deleteMany();
     }
   } catch (err) {
     console.error("[mongoose] connect Error :(");
