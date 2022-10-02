@@ -1,4 +1,4 @@
-import { Auth, MailBox, OAuthMemory } from "@models/types";
+import { Auth, Mail, MailBox, OAuthMemory } from "@models/types";
 import { generateRandomString } from "@utils";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
@@ -8,6 +8,21 @@ import _ from "lodash";
 import { writeSuccessAlert } from "@utils/socket";
 
 const routes = Express.Router();
+
+routes.get("/service", async (req: Express.Request, res: Express.Response) => {
+  const mailBoxCount = await MailBox.count();
+  const mailCount = await Mail.count();
+
+  console.log(mailBoxCount);
+  console.log(mailCount);
+
+  return res.status(StatusCodes.OK).json({
+    count: {
+      mail: mailCount,
+      mailBox: mailBoxCount,
+    },
+  });
+});
 
 routes.get(
   "/spotify-oauth",

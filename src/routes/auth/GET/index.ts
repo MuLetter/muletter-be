@@ -1,7 +1,9 @@
 import { getTokenByClientCredentials } from "@api";
-import { Auth } from "@models/types";
+import { loginCheck } from "@middlewares";
+import { Auth, Mail, MailBox } from "@models/types";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
+import _ from "lodash";
 
 const routes = Express.Router();
 
@@ -28,6 +30,26 @@ routes.get(
     } catch (err) {
       return next(err);
     }
+  }
+);
+
+routes.get(
+  "/info",
+  loginCheck,
+  async (req: Express.Request, res: Express.Response) => {
+    const { id } = req.auth;
+
+    const mailBoxes = await MailBox.getListByAuthId(id);
+    const mailBoxIds = _.map(mailBoxes, ({ _id }) => _id.toString());
+
+    const mailCount = await Mail.countByBoxId(mailBoxIds);
+
+    return res.status(StatusCodes.OK).json({
+      count: {
+        mail: mailCount,
+        mailBox: mailBoxIds.length,
+      },
+    });
   }
 );
 

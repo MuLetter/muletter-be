@@ -46,7 +46,10 @@ class Recommender {
     try {
       const mailBox = await MailBox.get(id);
       this.mailBox = mailBox;
-
+      this.mailBox.tracks = _.filter(
+        this.mailBox.tracks,
+        ({ isUse }) => !isUse
+      );
       const resToken = await getTokenByClientCredentials();
       this.spotifyToken = resToken.data.access_token;
     } catch (err) {

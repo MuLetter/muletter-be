@@ -58,4 +58,12 @@ export class Mail implements IMail {
 
     return Mail.getFromDocs(mail);
   }
+
+  static async count() {
+    return await MailModel.estimatedDocumentCount();
+  }
+
+  static async countByBoxId(ids: string[]) {
+    return await MailModel.countDocuments({ mailBoxId: { $in: ids } });
+  }
 }

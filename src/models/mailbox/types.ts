@@ -87,4 +87,14 @@ export class MailBox implements IMailbox {
       sort: { updatedAt: -1 },
     });
   }
+
+  static async count() {
+    return await MailBoxModel.estimatedDocumentCount();
+  }
+
+  static async countByAuthId(id: string) {
+    return await MailBoxModel.countDocuments({
+      authId: id,
+    });
+  }
 }
