@@ -116,11 +116,16 @@ export class MailBox implements IMailbox {
   }
 
   async isUseUpdate() {
+    const originalMailBox = await MailBoxModel.findById(this._id);
+
     await MailBoxModel.updateOne(
       { _id: this._id },
       {
         $set: {
-          tracks: _.map(this.tracks, (track) => ({ ...track, isUse: true })),
+          tracks: _.map(originalMailBox!.tracks, (track) => ({
+            ...track,
+            isUse: true,
+          })),
         },
       }
     );
