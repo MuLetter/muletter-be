@@ -1,6 +1,7 @@
 import { MailBox, Mail } from "@models/types";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
+import _ from "lodash";
 
 const routes = Express.Router();
 
@@ -38,6 +39,28 @@ routes.get(
       return res.status(StatusCodes.OK).json(test);
     } catch (err) {
       console.error(err);
+      return next(err);
+    }
+  }
+);
+
+routes.get(
+  "/unuse/:id",
+  async (
+    req: Express.Request,
+    res: Express.Response,
+    next: Express.NextFunction
+  ) => {
+    const { id } = req.params;
+    try {
+      const mailBox = await MailBox.get(id);
+
+      return res
+        .status(StatusCodes.OK)
+        .json(_.filter(mailBox!.tracks, ({ isUse }) => !isUse));
+    } catch (err) {
+      console.error(err);
+
       return next(err);
     }
   }
