@@ -191,6 +191,7 @@ export class Auth implements IAuth {
       username: this.username,
       password: this.password,
       nickname: this.nickname,
+      spotifyToken: this.spotifyToken,
     };
 
     const auth = await AuthModel.create(_auth);

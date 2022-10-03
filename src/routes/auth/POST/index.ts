@@ -33,10 +33,12 @@ routes.post(
     res: Express.Response,
     next: Express.NextFunction
   ) => {
-    const { username, password, nickname } = req.body;
+    const { username, password, nickname, spotifyToken } = req.body;
 
     try {
       const auth = await Auth.check(username, password, nickname);
+
+      if (spotifyToken) auth.spotifyToken = spotifyToken;
 
       await auth.save();
       const loginTest = await Auth.login(username, password);
