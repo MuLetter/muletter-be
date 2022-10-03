@@ -43,6 +43,9 @@ export class Mail implements IMail {
     return await MailModel.aggregate([
       { $match: { mailBoxId: new Types.ObjectId(id) } },
       {
+        $sort: { createdAt: -1 },
+      },
+      {
         $project: {
           _id: 1,
           title: 1,
@@ -65,5 +68,9 @@ export class Mail implements IMail {
 
   static async countByBoxId(ids: string[]) {
     return await MailModel.countDocuments({ mailBoxId: { $in: ids } });
+  }
+
+  static async getSample() {
+    return await MailModel.aggregate().sample(1);
   }
 }

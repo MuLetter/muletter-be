@@ -25,6 +25,33 @@ routes.get("/service", async (req: Express.Request, res: Express.Response) => {
 });
 
 routes.get(
+  "/random-music",
+  async (
+    req: Express.Request,
+    res: Express.Response,
+    next: Express.NextFunction
+  ) => {
+    const { size } = req.query;
+
+    try {
+      const ranMail = await Mail.getSample();
+
+      if (ranMail.length !== 0) {
+        return res
+          .status(StatusCodes.OK)
+          .json(_.sampleSize(ranMail[0].tracks, parseInt(size as string)));
+      } else {
+        return res.status(StatusCodes.OK).json([]);
+      }
+    } catch (err) {
+      console.error(err);
+
+      return next(err);
+    }
+  }
+);
+
+routes.get(
   "/spotify-oauth",
   async (req: Express.Request, res: Express.Response<ResGetSpotifyOAuth>) => {
     const state = generateRandomString(16);
