@@ -1,6 +1,11 @@
 import { OAuthMemory } from "@models/types";
 
-export const SPOTIFY_NEEDED_SCOPES = ["user-read-email", "streaming"];
+export const SPOTIFY_NEEDED_SCOPES = [
+  "user-read-email",
+  "streaming",
+  "user-modify-playback-state",
+  "user-read-private",
+];
 export const SPOTIFY_OAUTH_QUERY_SET = {
   response_type: "code",
   client_id: process.env.SPOTIFY_CLIENT_ID,
