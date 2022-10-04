@@ -36,7 +36,7 @@ export interface IOAuthMemory {
 export interface UpdateAuth {
   nickname?: string;
   profile?: string;
-  spotifyToken?: string;
+  spotifyToken?: SpotifyToken;
   socketId?: string;
 }
 
@@ -48,6 +48,7 @@ export class Auth implements IAuth {
 
   nickname: string;
   profile!: string;
+  spotifyProfile?: SpotifyUser;
   spotifyToken!: SpotifyToken;
   socketId?: string;
   createdAt!: Date;
@@ -75,6 +76,7 @@ export class Auth implements IAuth {
     };
     if (this.spotifyToken) auth.spotifyToken = this.spotifyToken;
     if (this.socketId) auth.socketId = this.socketId;
+    if (this.spotifyProfile) auth.spotifyProfile = this.spotifyProfile;
 
     return auth;
   }
@@ -134,13 +136,17 @@ export class Auth implements IAuth {
 
       if (!dbCheck) throw new Error();
 
-      return new Auth(
+      const _auth = new Auth(
         dbCheck.username,
         dbCheck.password,
         dbCheck.nickname,
         dbCheck.id,
         dbCheck.socketId
       );
+
+      if (dbCheck.spotifyToken) _auth.spotifyToken = dbCheck.spotifyToken;
+
+      return _auth;
     } catch (err) {
       throw new ResponseError(
         StatusCodes.FORBIDDEN,
@@ -203,14 +209,19 @@ export class Auth implements IAuth {
     await AuthModel.updateOne({ _id: this.id }, update);
     const updateAuth = await AuthModel.findById(this.id);
 
-    if (updateAuth)
-      return new Auth(
+    if (updateAuth) {
+      const auth = new Auth(
         updateAuth?.username,
         updateAuth?.password,
         updateAuth.nickname,
         updateAuth?._id,
         updateAuth.socketId
       );
+
+      if (update.spotifyToken) auth.spotifyToken = update.spotifyToken;
+
+      return auth;
+    }
 
     return;
   }

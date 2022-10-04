@@ -16,6 +16,7 @@ export interface SpotifyToken {
   expires_in: number;
   refresh_token?: number;
   scope?: string;
+  isExpires?: boolean;
 }
 
 export interface SpotifyUser {

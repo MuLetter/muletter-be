@@ -1,6 +1,7 @@
-import { getTokenByClientCredentials } from "@api";
+import { getTokenByClientCredentials, getUserMe } from "@api";
 import { loginCheck } from "@middlewares";
 import { Auth, Mail, MailBox } from "@models/types";
+import { AxiosError } from "axios";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
 import _ from "lodash";
@@ -24,6 +25,20 @@ routes.get(
       if (!auth.spotifyToken) {
         auth.spotifyToken = await (await getTokenByClientCredentials()).data;
         console.log("injected spotifyToken", auth);
+      } else {
+        // authorization code의 spotify token이 존재하는 것
+        console.log("/auth", auth.spotifyToken);
+        try {
+          const res = await getUserMe(auth.spotifyToken.access_token);
+          auth.spotifyProfile = res.data;
+        } catch (err: any) {
+          if (err.response.status === 401) {
+            auth.spotifyToken = await (
+              await getTokenByClientCredentials()
+            ).data;
+            auth.spotifyToken.isExpires = true;
+          }
+        }
       }
 
       return res.status(StatusCodes.OK).json(auth.toPlainObject());

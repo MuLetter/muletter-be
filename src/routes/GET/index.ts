@@ -1,4 +1,4 @@
-import { Auth, Mail, MailBox, OAuthMemory } from "@models/types";
+import { Auth, Mail, MailBox, OAuthMemory, UpdateAuth } from "@models/types";
 import { generateRandomString } from "@utils";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
@@ -81,8 +81,19 @@ routes.get(
 
     try {
       const oauthMemory = await OAuthMemory.get(state as string);
+      const path = oauthMemory.data.pathname;
+
       const token = await oauthMemory.getToken(code as string);
       const profile = await oauthMemory.getProfile(token.access_token);
+
+      if (path !== "/auth/join") {
+        const userToken = oauthMemory.data.userToken;
+        const check = await Auth.tokenCheck(userToken);
+
+        console.log("업데이트 전", check);
+        const updateAuth: UpdateAuth = { spotifyToken: token };
+        console.log("업데이트 후", await check.update(updateAuth));
+      }
 
       return res.status(StatusCodes.OK).json({
         spotifyToken: token,

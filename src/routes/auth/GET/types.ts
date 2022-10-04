@@ -1,4 +1,4 @@
-import { SpotifyToken } from "@api/types";
+import { SpotifyToken, SpotifyUser } from "@api/types";
 import { Schema } from "mongoose";
 
 export interface AuthFromToken {
@@ -6,5 +6,6 @@ export interface AuthFromToken {
   username: string;
   nickname: string;
   spotifyToken?: SpotifyToken;
+  spotifyProfile?: SpotifyUser;
   socketId?: string;
 }
