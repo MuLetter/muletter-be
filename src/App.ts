@@ -48,13 +48,6 @@ class App {
     this.server = https.createServer(options, this.app).listen(443, () => {
       console.log(`[Express : 443] Start! :)`);
     });
-
-    http.createServer((req, res) => {
-      res.writeHead(301, {
-        Location: "https://" + req.headers["host"] + req.url,
-      });
-      res.end();
-    });
   }
 
   async Start() {
