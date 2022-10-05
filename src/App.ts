@@ -7,12 +7,14 @@ import cors from "cors";
 import { init } from "@models/connect";
 import { errorHandler } from "./routes/error";
 import http from "http";
+import https from "https";
 import { socketConnect } from "./utils/socket";
+import fs from "fs";
 
 dotenv.config();
 
 class App {
-  server: http.Server;
+  server!: http.Server;
   app: Express.Application;
 
   constructor() {
@@ -20,8 +22,8 @@ class App {
 
     this.SetMW();
     this.SetRoutes();
-
-    this.server = http.createServer(this.app);
+    if (process.env.TYPE === "SERVER") this.SetSSL();
+    else this.server = http.createServer(this.app);
   }
 
   SetMW() {
@@ -33,6 +35,26 @@ class App {
   SetRoutes() {
     this.app.use(routes);
     this.app.use(errorHandler);
+  }
+
+  SetSSL() {
+    const KEY_URL = process.env.KEY_URL;
+    const options = {
+      key: fs.readFileSync(`${KEY_URL}/privkey.pem`),
+      cert: fs.readFileSync(`${KEY_URL}/cert.pem`),
+      ca: fs.readFileSync(`${KEY_URL}/chain.pem`),
+    };
+
+    https.createServer(options, this.app).listen(443, () => {
+      console.log(`[Express : 443] Start! :)`);
+    });
+
+    this.server = http.createServer((req, res) => {
+      res.writeHead(301, {
+        Location: "https://" + req.headers["host"] + req.url,
+      });
+      res.end();
+    });
   }
 
   async Start() {
