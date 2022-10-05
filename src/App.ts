@@ -40,7 +40,7 @@ class App {
   SetSSL() {
     const KEY_URL = process.env.KEY_URL;
     const options = {
-      key: fs.readFileSync(`${KEY_URL}/privkey.pem`),
+      key: fs.readFileSync(`${KEY_URL}/key.pem`),
       cert: fs.readFileSync(`${KEY_URL}/cert.pem`),
       ca: fs.readFileSync(`${KEY_URL}/chain.pem`),
     };
