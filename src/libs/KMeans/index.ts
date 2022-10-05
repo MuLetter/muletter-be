@@ -3,7 +3,7 @@ import { clusterSeparation, sumOfSqaured } from "./calculator";
 import { v1, v2 } from "./setCentroids";
 import { euclideanDistance, getMinLabel } from "./utils";
 
-class KMeans {
+class KMeans implements Iterator<number[]> {
   datas: number[][];
   K: number;
 
@@ -20,6 +20,14 @@ class KMeans {
     this.datas = datas;
     this.K = Math.round(Math.sqrt(datas.length / 2));
     this.earlyStop = earlyStop;
+  }
+
+  transform(datas: number[][]) {
+    return _.map(datas, (x) =>
+      getMinLabel(
+        _.map(this.centroids, (centroid) => euclideanDistance(x, centroid))
+      )
+    );
   }
 
   setCentroids(version: number) {
@@ -45,7 +53,9 @@ class KMeans {
     this.done = false;
     this.labels = _.fill(new Array(this.datas.length), 0);
   }
-
+  [Symbol.iterator]() {
+    return this;
+  }
   next() {
     this.labels = _.map(this.datas, (x) =>
       getMinLabel(
@@ -64,7 +74,11 @@ class KMeans {
     if (_.isEqual(this.centroids, newCentroids)) this.earlyStop--;
     this.centroids = newCentroids;
 
-    if (this.earlyStop === 0) this.done = true;
+    if (this.earlyStop === 0) {
+      return { value: this.labels, done: true };
+    }
+
+    return { value: this.labels, done: false };
   }
 
   get clusterSeparation() {

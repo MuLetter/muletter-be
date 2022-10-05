@@ -292,8 +292,6 @@ class Recommender {
   };
 
   labelParsing = () => {
-    let isSaving = false;
-
     const [recoIds] = this.getRecoIdsAndLabels();
 
     // recoTracks
@@ -314,10 +312,7 @@ class Recommender {
     // 2. KMeans Run
     const kmeans = new KMeans(datas);
     kmeans.setCentroids(2);
-    do {
-      kmeans.next();
-    } while (!kmeans.done);
-
+    for (let km of kmeans);
     this.kmeans = kmeans;
   };
 
