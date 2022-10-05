@@ -45,9 +45,7 @@ class App {
       ca: fs.readFileSync(`${KEY_URL}/chain.pem`, "utf-8"),
     };
 
-    this.server = https.createServer(options, this.app).listen(443, () => {
-      console.log(`[Express : 443] Start! :)`);
-    });
+    this.server = https.createServer(options, this.app);
   }
 
   async Start() {
