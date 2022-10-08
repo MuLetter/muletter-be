@@ -1,3 +1,4 @@
+import { CoordGenerator } from "@lib/CoordGenerator";
 import KMeans from "@lib/KMeans";
 import { euclideanDistance, getMinLabel } from "@lib/KMeans/utils";
 import MinMaxScaler from "@lib/MinMaxScaler";
@@ -120,7 +121,7 @@ export class SeedZoneObserver {
     this.kmeans!.centroids = kmeansInjectedCentroids;
   }
 
-  async observing() {
+  static async observing() {
     const count = await SeedZoneModel.estimatedDocumentCount();
     const clusterZone = await ClusterZoneModel.find(
       {},
@@ -128,11 +129,25 @@ export class SeedZoneObserver {
       { sort: { createdAt: -1 } }
     );
 
-    const K = clusterZone[0].K;
     const chkK = Math.round(Math.sqrt(count / 2));
+    console.log(0, chkK);
+    if (clusterZone.length === 0 && chkK >= 4) {
+      console.log(0, chkK);
+      console.log("seedzone observer run");
+      const sObs = await SeedZoneObserver.init();
+      await sObs.run();
+      await sObs.save();
+
+      return;
+    }
+
+    if (clusterZone.length === 0) return;
+
+    const K = clusterZone[0].K;
 
     console.log(K, chkK);
     if (K < chkK) {
+      console.log(K, chkK);
       console.log("seedzone observer run");
       const sObs = await SeedZoneObserver.init();
       await sObs.run();
@@ -145,7 +160,7 @@ export class SeedZoneObserver {
     const sObs = await SeedZoneObserver.init();
     const clusterZone = await ClusterZone.recovery();
 
-    const labels = clusterZone.transform(sObs.processDatas as number[][]);
+    const labels = clusterZone!.transform(sObs.processDatas as number[][]);
     const zipDatas = _.zip(sObs.processIds, labels);
     for (let [id, label] of zipDatas)
       await SeedZoneModel.updateOne(
@@ -156,5 +171,6 @@ export class SeedZoneObserver {
           },
         }
       );
+    await CoordGenerator.allMakeCoord();
   }
 }

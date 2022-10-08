@@ -7,6 +7,11 @@ import { MailBoxModel } from ".";
 import { MailBoxesProjection } from "./projections";
 import _ from "lodash";
 
+export interface IPoint {
+  x: number;
+  y: number;
+}
+
 export interface IMailbox {
   readonly _id?: Schema.Types.ObjectId | string;
   title: string;
@@ -14,6 +19,8 @@ export interface IMailbox {
   tracks: Track[];
 
   authId: Schema.Types.ObjectId | string;
+  point?: IPoint;
+
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -27,6 +34,8 @@ export class MailBox implements IMailbox {
   tracks: Track[];
 
   authId: Schema.Types.ObjectId | string;
+  point?: IPoint;
+
   createdAt!: Date;
   updatedAt!: Date;
 

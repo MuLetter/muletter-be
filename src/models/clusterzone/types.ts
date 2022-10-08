@@ -48,6 +48,7 @@ export class ClusterZone {
       {},
       { sort: { createdAt: -1 } }
     );
+    if (docs.length === 0) return null;
     const doc = docs[0];
 
     return new ClusterZone(doc);

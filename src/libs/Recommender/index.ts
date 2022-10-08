@@ -16,6 +16,8 @@ import {
 import MinMaxScaler from "../MinMaxScaler";
 import KMeans from "../KMeans";
 import RecommenderAdjust from "./adjust";
+import { SeedZoneObserver } from "@lib/SeedZoneObserver";
+import { CoordGenerator } from "@lib/CoordGenerator";
 
 @RecommenderAdjust
 class Recommender {
@@ -115,6 +117,9 @@ class Recommender {
       this.audioFeatures = await new FeaturesGenerator(
         this.mailBox!.tracks
       ).generate(this);
+      await SeedZoneObserver.append(this.audioFeatures);
+      await CoordGenerator.getCoord(this.mailBox!._id!.toString());
+      SeedZoneObserver.observing();
     } catch (err) {
       console.log(this.spotifyToken);
       console.error(err);

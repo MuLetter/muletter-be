@@ -8,6 +8,7 @@ const MailBoxSchema = new Schema<IMailbox>(
     tracks: [{ type: Schema.Types.Mixed, required: true }],
 
     authId: { type: Schema.Types.ObjectId, required: true },
+    point: { type: Schema.Types.Mixed, required: false },
   },
   {
     collection: "MailBox",
