@@ -1,5 +1,6 @@
 import RecommenderBuilder from "./Recommender/builder";
 
+export * from "./SeedZoneObserver";
 export async function RecommenderRun(id: string) {
   console.log("작업 시작합니다 :)");
   const builder = new RecommenderBuilder();
