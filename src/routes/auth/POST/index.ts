@@ -2,6 +2,8 @@ import { Auth } from "@models/types";
 import Express from "express";
 import { ReqJoinBody, ReqLoginBody } from "./types";
 import { StatusCodes } from "http-status-codes";
+import { loginCheck } from "@middlewares";
+import { profileImageUpload } from "@utils";
 
 const routes = Express.Router();
 
@@ -48,6 +50,33 @@ routes.post(
 
       return res.status(StatusCodes.CREATED).json({
         token: loginTest.token,
+      });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+routes.post(
+  "/profile",
+  loginCheck,
+  profileImageUpload,
+  async (
+    req: Express.Request,
+    res: Express.Response,
+    next: Express.NextFunction
+  ) => {
+    const { id } = req.auth;
+
+    const file = req.file;
+    const path = file?.path;
+
+    try {
+      const auth = await Auth.getById(id);
+      await auth.saveProfile(path!);
+
+      return res.status(StatusCodes.OK).json({
+        profile: path,
       });
     } catch (err) {
       return next(err);

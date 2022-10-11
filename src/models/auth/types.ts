@@ -77,6 +77,7 @@ export class Auth implements IAuth {
     if (this.spotifyToken) auth.spotifyToken = this.spotifyToken;
     if (this.socketId) auth.socketId = this.socketId;
     if (this.spotifyProfile) auth.spotifyProfile = this.spotifyProfile;
+    if (this.profile) auth.profile = this.profile;
 
     return auth;
   }
@@ -145,6 +146,7 @@ export class Auth implements IAuth {
       );
 
       if (dbCheck.spotifyToken) _auth.spotifyToken = dbCheck.spotifyToken;
+      if (dbCheck.profile) _auth.profile = dbCheck.profile;
 
       return _auth;
     } catch (err) {
@@ -203,6 +205,10 @@ export class Auth implements IAuth {
     const auth = await AuthModel.create(_auth);
 
     return auth;
+  }
+
+  async saveProfile(profile: string) {
+    await AuthModel.updateOne({ _id: this.id }, { profile });
   }
 
   async update(update: UpdateAuth) {

@@ -12,3 +12,14 @@ export const mailBoxImageUpload: Express.RequestHandler = multer({
     },
   }),
 }).single("image");
+
+export const profileImageUpload: Express.RequestHandler = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "static");
+    },
+    filename: (req, file, cb) => {
+      cb(null, `profile-${Date.now()}${path.extname(file.originalname)}`);
+    },
+  }),
+}).single("image");
