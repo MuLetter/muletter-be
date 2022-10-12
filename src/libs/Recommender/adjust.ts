@@ -15,10 +15,7 @@ function RecommenderAdjust<T extends { new (...args: any[]): Recommender }>(
     }
     next() {
       this.run();
-      if (
-        this.recoTracks.length <= this.MAX_LENGTH &&
-        this.recoTracks.length >= this.MIN_LENGTH
-      ) {
+      if (this.recoTracks.length >= this.MIN_LENGTH) {
         this.recoTracks = _.shuffle(this.recoTracks);
         return { value: this.recoTracks.length, done: true };
       } else return { value: this.recoTracks.length, done: false };

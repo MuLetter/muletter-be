@@ -317,7 +317,7 @@ class Recommender {
     // 2. KMeans Run
     const kmeans = new KMeans(datas);
     kmeans.setCentroids(2);
-    for (let km of kmeans);
+    for (let labels of kmeans);
     this.kmeans = kmeans;
   };
 
