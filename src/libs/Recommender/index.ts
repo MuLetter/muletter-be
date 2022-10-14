@@ -186,17 +186,21 @@ class Recommender {
       for (let seed of this.seeds!) {
         const resRecommendations = await getRecommendations.call(this, seed);
         const recos = resRecommendations.data.tracks;
-        const parsed = _.map(recos, ({ id, name, artists, album }) => ({
-          id,
-          name,
-          artists: _.map(artists, ({ id, name }) => ({
+        const parsed = _.map(
+          recos,
+          ({ id, name, preview_url, artists, album }) => ({
             id,
             name,
-          })),
-          album: {
-            images: album.images,
-          },
-        }));
+            preview_url,
+            artists: _.map(artists, ({ id, name }) => ({
+              id,
+              name,
+            })),
+            album: {
+              images: album.images,
+            },
+          })
+        );
 
         recommendations = _.concat(recommendations, parsed) as Track[];
       }

@@ -10,4 +10,10 @@ routes.get("/", async (req: Express.Request, res: Express.Response) => {
   return res.status(StatusCodes.OK).json(mailBoxes);
 });
 
+routes.get("/mailbox", async (req: Express.Request, res: Express.Response) => {
+  const mailBoxes = await MailBoxModel.find({});
+
+  return res.status(StatusCodes.OK).json(mailBoxes);
+});
+
 export default routes;
