@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 import { AuthModel, OAuthMemoryModel } from ".";
 import bcrypt from "bcrypt";
-import { authProjection } from "./projections";
+import { authProjection, authSimpleProjection } from "./projections";
 import jwt from "jsonwebtoken";
 import { ResponseError } from "@routes/error";
 import { StatusCodes } from "http-status-codes";
@@ -174,6 +174,14 @@ export class Auth implements IAuth {
     if (user.socketId) auth.socketId = user.socketId;
 
     return auth;
+  }
+
+  static async getSimple(id: Schema.Types.ObjectId | string) {
+    const user = await AuthModel.findById(id, authSimpleProjection);
+
+    if (!user) return;
+
+    return user;
   }
 
   set password(password: string) {
