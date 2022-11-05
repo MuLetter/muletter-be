@@ -5,6 +5,7 @@ import { Schema } from "mongoose";
 import { MailBoxModel } from ".";
 import { MailBoxesProjection } from "./projections";
 import _ from "lodash";
+import { Auth, Mail } from "@models/types";
 
 export interface IPoint {
   x: number;
@@ -25,7 +26,10 @@ export interface IMailbox {
   updatedAt?: Date;
 
   // Class 용
+  mailCount?: number;
+  likeCount?: number;
   isLike?: boolean;
+  user?: Auth;
 }
 
 export class MailBox implements IMailbox {
@@ -43,7 +47,10 @@ export class MailBox implements IMailbox {
   createdAt!: Date;
   updatedAt!: Date;
 
+  likeCount?: number;
+  mailCount?: number;
   isLike?: boolean;
+  user?: Auth;
 
   constructor(document: IMailbox) {
     Object.assign(this, document);
@@ -110,6 +117,35 @@ export class MailBox implements IMailbox {
     }
 
     return new MailBox(mailBox);
+  }
+
+  static async getAll(options?: QueryMailboxOption): Promise<IMailbox[]> {
+    const _mailBoxes = await MailBoxModel.find(
+      {},
+      { _v: 0, createdAt: 0, updatedAt: 0 }
+    );
+    const mailBoxes: IMailbox[] = await Promise.all(
+      _.map(_mailBoxes, async (_mailBox) => {
+        const user = await Auth.getSimple(_mailBox.authId);
+        const mailes = await Mail.getListByMailBoxId(_mailBox._id.toString());
+        const mb = {
+          ..._mailBox.toObject(),
+          mailCount: mailes.length,
+          likeCount: _mailBox.likes ? _mailBox.likes.length : 0,
+          user,
+        } as IMailbox;
+
+        if (options)
+          if (options.likeCheck)
+            mb.isLike = _mailBox.likes
+              ? _.includes(_mailBox.likes, options.likeCheck)
+              : false;
+
+        return mb;
+      })
+    );
+
+    return mailBoxes;
   }
 
   static async getListByAuthId(authId: string) {

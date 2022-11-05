@@ -1,5 +1,5 @@
 import { MailBoxModel } from "@models";
-import { Auth } from "@models/types";
+import { MailBox } from "@models/types";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
 import _ from "lodash";
@@ -19,20 +19,9 @@ routes.get(
     res: Express.Response,
     next: Express.NextFunction
   ) => {
+    const { id } = req.auth;
     try {
-      const _mailBoxes = await MailBoxModel.find(
-        {},
-        { _v: 0, createdAt: 0, updatedAt: 0 }
-      );
-      const mailBoxes = await Promise.all(
-        _.map(_mailBoxes, async (_mailBox) => {
-          const user = await Auth.getSimple(_mailBox.authId);
-          return {
-            ..._mailBox.toObject(),
-            user,
-          };
-        })
-      );
+      const mailBoxes = await MailBox.getAll({ likeCheck: id! });
 
       console.log(mailBoxes);
 
