@@ -34,7 +34,7 @@ routes.get(
     const { id } = req.params;
 
     try {
-      const mailbox = await MailBox.get(id);
+      const mailbox = await MailBox.get(id, true);
       const mails = await Mail.getListByMailBoxId(id);
 
       return res.status(StatusCodes.OK).json({ mailbox, mails });

@@ -24,7 +24,11 @@ routes.post(
     const path = file?.path;
 
     try {
-      const mailBox = new MailBox(auth, title, path);
+      const mailBox = new MailBox({
+        authId: auth.id,
+        title: title,
+        image: path,
+      } as any);
       const savedMailBox = await mailBox.save();
 
       return res.status(StatusCodes.CREATED).json(savedMailBox);
