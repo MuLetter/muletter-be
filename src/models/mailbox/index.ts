@@ -7,6 +7,7 @@ const MailBoxSchema = new Schema<IMailbox>(
     image: { type: String, required: false },
     tracks: [{ type: Schema.Types.Mixed, required: true }],
 
+    likes: [{ type: String, required: true }],
     authId: { type: Schema.Types.ObjectId, required: true },
     point: { type: Schema.Types.Mixed, required: false },
   },

@@ -51,6 +51,7 @@ export class Mail implements IMail {
           title: 1,
           tracks: { $slice: ["$tracks", 5] },
           size: { $size: "$tracks" },
+          createdAt: 1,
         },
       },
     ]);

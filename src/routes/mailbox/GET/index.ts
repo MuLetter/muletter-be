@@ -1,6 +1,7 @@
 import { MailBox, Mail } from "@models/types";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
+import { request } from "https";
 import _ from "lodash";
 
 const routes = Express.Router();
@@ -31,10 +32,14 @@ routes.get(
     res: Express.Response,
     next: Express.NextFunction
   ) => {
+    const { auth } = req;
     const { id } = req.params;
 
     try {
-      const mailbox = await MailBox.get(id, true);
+      const mailbox = await MailBox.get(id, {
+        includeUse: true,
+        likeCheck: auth.id,
+      });
       const mails = await Mail.getListByMailBoxId(id);
 
       return res.status(StatusCodes.OK).json({ mailbox, mails });

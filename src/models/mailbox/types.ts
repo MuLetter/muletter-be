@@ -19,9 +19,13 @@ export interface IMailbox {
 
   authId: Schema.Types.ObjectId | string;
   point?: IPoint;
+  likes?: string[];
 
   createdAt?: Date;
   updatedAt?: Date;
+
+  // Class 용
+  isLike?: boolean;
 }
 
 export class MailBox implements IMailbox {
@@ -29,6 +33,7 @@ export class MailBox implements IMailbox {
 
   title!: string;
   image?: string;
+  likes?: string[];
 
   tracks!: Track[];
 
@@ -37,6 +42,8 @@ export class MailBox implements IMailbox {
 
   createdAt!: Date;
   updatedAt!: Date;
+
+  isLike?: boolean;
 
   constructor(document: IMailbox) {
     Object.assign(this, document);
@@ -74,7 +81,10 @@ export class MailBox implements IMailbox {
     return await MailBox.get(this._id!);
   }
 
-  static async get(id: Schema.Types.ObjectId | string, includeUse?: boolean) {
+  static async get(
+    id: Schema.Types.ObjectId | string,
+    options?: QueryMailboxOption
+  ) {
     let mailBox = await MailBoxModel.findById(id);
 
     if (!mailBox)
@@ -85,11 +95,19 @@ export class MailBox implements IMailbox {
 
     mailBox = mailBox.toObject();
 
-    if (includeUse)
-      mailBox.tracks = _.filter(
-        mailBox.tracks,
-        ({ isUse }: Track) => isUse
-      ) as Track[];
+    if (options) {
+      if (options.includeUse)
+        mailBox.tracks = _.filter(
+          mailBox.tracks,
+          ({ isUse }: Track) => isUse
+        ) as Track[];
+      if (options.likeCheck) {
+        if (!mailBox.likes) mailBox.isLike = false;
+        else {
+          mailBox.isLike = _.includes(mailBox.likes, options.likeCheck);
+        }
+      }
+    }
 
     return new MailBox(mailBox);
   }
@@ -140,4 +158,9 @@ export class MailBox implements IMailbox {
 
     return await MailBoxModel.findById(this._id, { _id: 0, tracks: 1 });
   }
+}
+
+export interface QueryMailboxOption {
+  includeUse?: boolean;
+  likeCheck?: string;
 }
