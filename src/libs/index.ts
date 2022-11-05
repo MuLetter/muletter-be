@@ -1,3 +1,6 @@
+import { MailBoxModel } from "@models";
+import { MailBox } from "@models/types";
+import { logger } from "@utils";
 import RecommenderBuilder from "./Recommender/builder";
 
 export * from "./SeedZoneObserver";
@@ -11,8 +14,16 @@ export async function RecommenderRun(id: string) {
     await builder.step2();
     console.log(recommender.spotifyToken);
     await builder.step3();
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
+    await MailBoxModel.updateOne(
+      { _id: id },
+      {
+        $set: {
+          status: "ERROR",
+        },
+      }
+    );
+    logger.error(err.message);
   }
 
   for (let reco of recommender);

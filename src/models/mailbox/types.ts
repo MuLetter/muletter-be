@@ -7,6 +7,14 @@ import { MailBoxesProjection } from "./projections";
 import _ from "lodash";
 import { Auth, Mail } from "@models/types";
 
+export type MailBoxStatus =
+  | "CREATE"
+  | "APPEND"
+  | "SPOTIFY INIT"
+  | "PROCESSING"
+  | "ERROR"
+  | "SUCCESS";
+
 export interface IPoint {
   x: number;
   y: number;
@@ -17,6 +25,7 @@ export interface IMailbox {
   title: string;
   image?: string;
   tracks: Track[];
+  status: MailBoxStatus;
 
   authId: Schema.Types.ObjectId | string;
   point?: IPoint;
@@ -43,6 +52,7 @@ export class MailBox implements IMailbox {
 
   authId!: Schema.Types.ObjectId | string;
   point?: IPoint;
+  status!: MailBoxStatus;
 
   createdAt!: Date;
   updatedAt!: Date;
@@ -65,7 +75,7 @@ export class MailBox implements IMailbox {
   async appendTracks(tracks: Track[]) {
     await MailBoxModel.updateOne(
       { _id: this._id! },
-      { $addToSet: { tracks: { $each: tracks } } }
+      { $addToSet: { tracks: { $each: tracks } }, $set: { status: "APPEND" } }
     );
 
     return await MailBox.get(this._id!);

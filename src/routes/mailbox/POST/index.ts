@@ -28,6 +28,7 @@ routes.post(
         authId: auth.id,
         title: title,
         image: path,
+        status: "CREATE",
       } as any);
       const savedMailBox = await mailBox.save();
 

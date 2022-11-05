@@ -10,6 +10,7 @@ const MailBoxSchema = new Schema<IMailbox>(
     likes: [{ type: String, required: true }],
     authId: { type: Schema.Types.ObjectId, required: true },
     point: { type: Schema.Types.Mixed, required: false },
+    status: { type: Schema.Types.String, required: true },
   },
   {
     collection: "MailBox",

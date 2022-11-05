@@ -18,6 +18,7 @@ import KMeans from "../KMeans";
 import RecommenderAdjust from "./adjust";
 import { SeedZoneObserver } from "@lib/SeedZoneObserver";
 import { CoordGenerator } from "@lib/CoordGenerator";
+import { VerifyErrors } from "jsonwebtoken";
 
 @RecommenderAdjust
 class Recommender {
@@ -58,8 +59,12 @@ class Recommender {
       );
       const resToken = await getTokenByClientCredentials();
       this.spotifyToken = resToken.data.access_token;
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      throw new Error(
+        `[우체통 ${id}] 우체통 추가 작업(step1. addMailbox)에서 에러가 발생했습니다.` +
+          "\n" +
+          JSON.stringify(err, null, 2)
+      );
     }
   }
 
@@ -67,9 +72,12 @@ class Recommender {
     try {
       const resAvailableGenres = await getAvailableGenres.call(this);
       this.availableGenres = resAvailableGenres.data.genres;
-    } catch (err) {
-      console.log(this.spotifyToken);
-      console.error(err);
+    } catch (err: any) {
+      throw new Error(
+        `[우체통 ${this.mailBox!._id?.toString()}] Spotify 이용 가능 장르 조회(step2. addAvailableGenres)에서 에러가 발생했습니다.` +
+          "\n" +
+          JSON.stringify(err, null, 2)
+      );
     }
   }
 
@@ -107,8 +115,11 @@ class Recommender {
         else this.artistAndGenres = artistAndGenres as ArtistAndGenres[];
       }
     } catch (err) {
-      console.log(this.spotifyToken);
-      console.error(err);
+      throw new Error(
+        `[우체통 ${this.mailBox!._id?.toString()}] Spotify 시드 음악 가수, 장르 조회(step2. addAvailableGenres)에서 에러가 발생했습니다.` +
+          "\n" +
+          JSON.stringify(err, null, 2)
+      );
     }
   }
 
