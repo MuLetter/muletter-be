@@ -1,3 +1,5 @@
+import { MailBoxModel } from "@models";
+
 import Express from "express";
 import { TestUtils } from "./utils";
 
@@ -15,5 +17,25 @@ routes.post("/confirm", (req: Express.Request, res: Express.Response) => {
   console.log("당신이 보낸 데이터가 이것이 맞는감,,?", req.body.data);
   return res.send("settimeout 등록 완료.");
 });
+
+routes.get(
+  "/error",
+  async (
+    req: Express.Request,
+    res: Express.Response,
+    next: Express.NextFunction
+  ) => {
+    try {
+      // const mailBox = await MailBoxModel.findOne({ zz: 1 });
+      const mailBox = undefined;
+
+      (mailBox as any).id = 0;
+
+      return mailBox;
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
 
 export default routes;

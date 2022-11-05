@@ -1,5 +1,6 @@
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import Express from "express";
+import { logger } from "@utils";
 
 export class ResponseError extends Error {
   statusCode: StatusCodes;
@@ -22,6 +23,8 @@ export function errorHandler(
   res: Express.Response,
   next: Express.NextFunction
 ) {
+  logger.http(err.stack);
+
   if (!err.hasOwnProperty("statusCode")) return next(ServerError);
 
   return res.status(err.statusCode).json({

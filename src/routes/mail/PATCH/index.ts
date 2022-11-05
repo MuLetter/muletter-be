@@ -16,6 +16,7 @@ routes.patch(
 
     try {
       const mailBox = await MailBox.get(mailBoxId);
+
       const newMailBox = await mailBox.appendMusic(track);
 
       return res.status(StatusCodes.OK).json(newMailBox!.tracks);
