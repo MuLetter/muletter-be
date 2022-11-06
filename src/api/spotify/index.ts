@@ -76,18 +76,26 @@ export const getArtists = function (
   );
 };
 
-export const getFeatures = function (this: HasToken, ids: string) {
+export const getFeatures = function (
+  this: HasToken,
+  ids: string,
+  isError?: boolean
+) {
   return axios.get<ResAudioFeatures>(
     `${APIURL}/audio-features?${qs.stringify({ ids })}`,
     {
       headers: {
-        authorization: `Bearer ${this.spotifyToken}`,
+        authorization: isError ? "B" : `Bearer ${this.spotifyToken}`,
       },
     }
   );
 };
 
-export const getRecommendations = function (this: HasToken, seed: Seed) {
+export const getRecommendations = function (
+  this: HasToken,
+  seed: Seed,
+  isError?: boolean
+) {
   return axios.get<ResGetRecommendations>(
     `${APIURL}/recommendations?${qs.stringify({
       ...seed,
@@ -96,7 +104,7 @@ export const getRecommendations = function (this: HasToken, seed: Seed) {
     })}`,
     {
       headers: {
-        authorization: `Bearer ${this.spotifyToken}`,
+        authorization: isError ? "B" : `Bearer ${this.spotifyToken}`,
       },
     }
   );

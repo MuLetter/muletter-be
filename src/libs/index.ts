@@ -14,6 +14,16 @@ export async function RecommenderRun(id: string) {
     await builder.step2();
     console.log(recommender.spotifyToken);
     await builder.step3();
+
+    for (let reco of recommender);
+    console.log(recommender.recoTracks.length);
+    console.log(recommender.recoTracks);
+
+    const mail = await recommender.saveDB();
+    console.log(mail);
+
+    await recommender.isUseUpdate();
+    await recommender.okay();
   } catch (err: any) {
     await MailBoxModel.updateOne(
       { _id: id },
@@ -25,14 +35,4 @@ export async function RecommenderRun(id: string) {
     );
     logger.error(err.message);
   }
-
-  for (let reco of recommender);
-  console.log(recommender.recoTracks.length);
-  console.log(recommender.recoTracks);
-
-  const mail = await recommender.saveDB();
-  console.log(mail);
-
-  await recommender.isUseUpdate();
-  await recommender.okay();
 }

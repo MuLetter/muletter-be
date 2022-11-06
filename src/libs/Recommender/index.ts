@@ -19,6 +19,7 @@ import RecommenderAdjust from "./adjust";
 import { SeedZoneObserver } from "@lib/SeedZoneObserver";
 import { CoordGenerator } from "@lib/CoordGenerator";
 import { VerifyErrors } from "jsonwebtoken";
+import { MailBoxModel } from "@models";
 
 @RecommenderAdjust
 class Recommender {
@@ -59,6 +60,15 @@ class Recommender {
       );
       const resToken = await getTokenByClientCredentials();
       this.spotifyToken = resToken.data.access_token;
+
+      await MailBoxModel.updateOne(
+        { _id: this.mailBox!._id },
+        {
+          $set: {
+            status: "SPOTIFY INIT",
+          },
+        }
+      );
     } catch (err: any) {
       throw new Error(
         `[우체통 ${id}] 우체통 추가 작업(step1. addMailbox)에서 에러가 발생했습니다.` +
@@ -132,8 +142,11 @@ class Recommender {
       await CoordGenerator.getCoord(this.mailBox!._id!.toString());
       SeedZoneObserver.observing();
     } catch (err) {
-      console.log(this.spotifyToken);
-      console.error(err);
+      throw new Error(
+        `[우체통 ${this.mailBox!._id?.toString()}] Spotify 오디오 분석 데이터 조회(step2. addAudioFeatures)에서 에러가 발생했습니다.` +
+          "\n" +
+          JSON.stringify(err, null, 2)
+      );
     }
   }
 
@@ -142,52 +155,60 @@ class Recommender {
     const artists = this.artistAndGenres;
     const features = this.audioFeatures;
 
-    this.seeds = _.map(tracks, ({ id: trackId, artists: _artists }) => {
-      let artistIds = _.map(_artists, ({ id }) => id);
-      let genres = _.uniq(
-        _.flatten(
-          _.map(
-            artistIds,
-            (artistId) => _.find(artists, ({ id }) => id === artistId)?.genres
+    try {
+      this.seeds = _.map(tracks, ({ id: trackId, artists: _artists }) => {
+        let artistIds = _.map(_artists, ({ id }) => id);
+        let genres = _.uniq(
+          _.flatten(
+            _.map(
+              artistIds,
+              (artistId) => _.find(artists, ({ id }) => id === artistId)?.genres
+            )
           )
-        )
+        );
+        const feature = _.find(features, ({ id }) => id === trackId);
+
+        // max 5 check
+        while (true) {
+          if (1 + artistIds.length + genres.length > 5) {
+            // track, artist 수량에 집중, 장르는 서브템으로
+            if (genres.length === 1) {
+              const newArtistsSize = 5 - (1 + genres.length);
+              artistIds = _.sampleSize(artistIds, newArtistsSize);
+            } else {
+              genres = _.drop(_.shuffle(genres));
+            }
+          } else break;
+        }
+        const seedArtists = _.join(artistIds, ",");
+        const seedGenres = _.join(genres, ",");
+
+        const seedFeatures = _.reduce(
+          Object.keys(feature!),
+          (acc, cur) =>
+            cur === "id"
+              ? acc
+              : {
+                  ...acc,
+                  [`target_${cur}`]: feature![cur],
+                },
+          {}
+        );
+
+        return {
+          seed_tracks: trackId,
+          seed_artists: seedArtists,
+          seed_genres: seedGenres,
+          ...seedFeatures,
+        };
+      }) as Seed[];
+    } catch (err) {
+      throw new Error(
+        `[우체통 ${this.mailBox!._id?.toString()}] Spotify 씨드 구조 생성(step3. addSeeds)에서 에러가 발생했습니다.` +
+          "\n" +
+          JSON.stringify(err, null, 2)
       );
-      const feature = _.find(features, ({ id }) => id === trackId);
-
-      // max 5 check
-      while (true) {
-        if (1 + artistIds.length + genres.length > 5) {
-          // track, artist 수량에 집중, 장르는 서브템으로
-          if (genres.length === 1) {
-            const newArtistsSize = 5 - (1 + genres.length);
-            artistIds = _.sampleSize(artistIds, newArtistsSize);
-          } else {
-            genres = _.drop(_.shuffle(genres));
-          }
-        } else break;
-      }
-      const seedArtists = _.join(artistIds, ",");
-      const seedGenres = _.join(genres, ",");
-
-      const seedFeatures = _.reduce(
-        Object.keys(feature!),
-        (acc, cur) =>
-          cur === "id"
-            ? acc
-            : {
-                ...acc,
-                [`target_${cur}`]: feature![cur],
-              },
-        {}
-      );
-
-      return {
-        seed_tracks: trackId,
-        seed_artists: seedArtists,
-        seed_genres: seedGenres,
-        ...seedFeatures,
-      };
-    }) as Seed[];
+    }
   }
 
   async addRecommendations() {
@@ -216,8 +237,11 @@ class Recommender {
         recommendations = _.concat(recommendations, parsed) as Track[];
       }
     } catch (err) {
-      console.log(this.spotifyToken);
-      console.error(err);
+      throw new Error(
+        `[우체통 ${this.mailBox!._id?.toString()}] Spotify 추천음악조회(step3. addRecommendations)에서 에러가 발생했습니다.` +
+          "\n" +
+          JSON.stringify(err, null, 2)
+      );
     }
 
     this.recommendations = _.uniqBy(recommendations, "id");
@@ -228,9 +252,21 @@ class Recommender {
       this.recoAudioFeatures = await new FeaturesGenerator(
         this.recommendations!
       ).generate(this);
+
+      await MailBoxModel.updateOne(
+        { _id: this.mailBox!._id },
+        {
+          $set: {
+            status: "PROCESSING",
+          },
+        }
+      );
     } catch (err) {
-      console.log(this.spotifyToken);
-      console.error(err);
+      throw new Error(
+        `[우체통 ${this.mailBox!._id?.toString()}] Spotify 추천음악 오디오 분석 데이터 조회(step3. addRecoAudioFeatures)에서 에러가 발생했습니다.` +
+          "\n" +
+          JSON.stringify(err, null, 2)
+      );
     }
   }
 
@@ -361,6 +397,15 @@ class Recommender {
     const title = `${title1} ${title2}`;
 
     const mail = new Mail(title, _.shuffle(this.recoTracks), this.mailBox!._id);
+
+    await MailBoxModel.updateOne(
+      { _id: this.mailBox!._id },
+      {
+        $set: {
+          status: "SUCCESS",
+        },
+      }
+    );
     return await mail.save();
   }
 
