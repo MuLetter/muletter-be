@@ -1,0 +1,1 @@
+*/3 * * * * /usr/local/bin/node /Users/formegusto/Desktop/idoformegusto/development/MuLetter/muletter-be/dist/utils/errorRetry >> /Users/formegusto/Desktop/idoformegusto/development/MuLetter/muletter-be/logs/retry/log_`date +\%Y\%m\%d`_`date +\%H\%M\%S`.log 2>&1

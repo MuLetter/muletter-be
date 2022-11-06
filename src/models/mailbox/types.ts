@@ -113,11 +113,12 @@ export class MailBox implements IMailbox {
     mailBox = mailBox.toObject();
 
     if (options) {
-      if (options.includeUse)
+      if (options.includeUse) {
         mailBox.tracks = _.filter(
           mailBox.tracks,
           ({ isUse }: Track) => isUse
         ) as Track[];
+      }
       if (options.likeCheck) {
         if (!mailBox.likes) mailBox.isLike = false;
         else {

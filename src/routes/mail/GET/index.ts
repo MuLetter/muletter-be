@@ -20,6 +20,7 @@ routes.get(
       const mailBoxTrackIds = _.map(mailBox!.tracks, ({ id }) => id);
 
       return res.status(StatusCodes.OK).json({
+        mailBoxId: mailBox._id,
         likes: mailBoxTrackIds,
         mail,
         isMe: auth.id === mailBox.authId.toString(),

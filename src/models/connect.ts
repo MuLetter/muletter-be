@@ -22,8 +22,8 @@ export async function dbConnect({ dbDrop }: AdminOptions) {
       await MailBoxModel.deleteMany();
       await OAuthMemoryModel.deleteMany();
       await MailModel.deleteMany();
-      await SeedZoneModel.deleteMany();
-      await ClusterZoneModel.deleteMany();
+      // await SeedZoneModel.deleteMany();
+      // await ClusterZoneModel.deleteMany();
     }
   } catch (err) {
     console.error("[mongoose] connect Error :(");

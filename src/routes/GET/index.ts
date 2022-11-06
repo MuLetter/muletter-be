@@ -6,6 +6,8 @@ import qs from "qs";
 import { ResGetSpotifyOAuth, SPOTIFY_OAUTH_QUERY_SET } from "./types";
 import _ from "lodash";
 import { writeSuccessAlert } from "@utils/socket";
+import { MailBoxModel } from "@models";
+import { RecommenderRun } from "@lib";
 
 const routes = Express.Router();
 
@@ -140,6 +142,21 @@ routes.get(
       console.error(err);
       return next(err);
     }
+  }
+);
+
+routes.get(
+  "/error-retry",
+  async (req: Express.Request, res: Express.Response) => {
+    try {
+      const errors = await MailBoxModel.find({ status: "ERROR" });
+
+      _.forEach(errors, ({ _id }) => {
+        RecommenderRun(_id.toString());
+      });
+    } catch (err) {}
+
+    return res.send("okay");
   }
 );
 
