@@ -6,6 +6,8 @@ import RecommenderBuilder from "./Recommender/builder";
 export * from "./SeedZoneObserver";
 export async function RecommenderRun(id: string) {
   console.log("작업 시작합니다 :)");
+  let start = new Date(); // 시작
+
   const builder = new RecommenderBuilder();
   const recommender = builder.get();
 
@@ -35,4 +37,8 @@ export async function RecommenderRun(id: string) {
     );
     logger.error(err.message);
   }
+
+  let end = new Date(); // 종료
+
+  console.log("실행시간", end.getTime() - start.getTime());
 }
