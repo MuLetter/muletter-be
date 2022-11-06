@@ -13,6 +13,7 @@ routes.get(
     next: Express.NextFunction
   ) => {
     try {
+      const { auth } = req;
       const { id } = req.params;
       const mail = await Mail.getById(id!);
       const mailBox = await MailBox.get(mail!.mailBoxId!);
@@ -21,6 +22,7 @@ routes.get(
       return res.status(StatusCodes.OK).json({
         likes: mailBoxTrackIds,
         mail,
+        isMe: auth.id === mailBox.authId.toString(),
       });
     } catch (err) {
       console.error(err);
