@@ -1,5 +1,6 @@
 import { MailBoxModel } from "@models";
 import { MailBox } from "@models/types";
+import mailbox from "@routes/mailbox";
 import Express from "express";
 import { StatusCodes } from "http-status-codes";
 import _ from "lodash";
@@ -7,9 +8,18 @@ import _ from "lodash";
 const routes = Express.Router();
 
 routes.get("/", async (req: Express.Request, res: Express.Response) => {
-  const mailBoxes = await MailBoxModel.find({}, { image: 1, point: 1, _id: 1 });
+  const { id } = req.auth;
+  const mailBoxes = await MailBoxModel.find(
+    {},
+    { image: 1, point: 1, _id: 1, authId: 1 }
+  );
+  const rtnMailBoxes = _.map(mailBoxes, (mailbox) => {
+    const plain = mailbox.toObject();
 
-  return res.status(StatusCodes.OK).json(mailBoxes);
+    return { ...plain, isMe: id === plain.authId.toString() };
+  });
+
+  return res.status(StatusCodes.OK).json(rtnMailBoxes);
 });
 
 routes.get(
