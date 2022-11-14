@@ -35,7 +35,7 @@ routes.get(
 
       console.log(mailBoxes);
 
-      return res.status(StatusCodes.OK).json(mailBoxes);
+      return res.status(StatusCodes.OK).json(_.shuffle(mailBoxes));
     } catch (err) {
       console.error(err);
       return next(err);
